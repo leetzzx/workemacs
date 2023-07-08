@@ -1,12 +1,3 @@
-;; use-package
-(eval-when-compile (require 'use-package))
-(eval-and-compile
-  (setq use-package-always-defer t)
-  (setq use-package-always-ensure t)
-  (setq use-package-always-demand nil)
-  (setq use-package-expand-minimally t)
-  )
-
 (add-to-list 'default-frame-alist
              '(font . "Source Code Pro-14"))
 (setq inhibit-splash-screen t)
@@ -22,35 +13,40 @@
 
 (setq package-selected-packages '(
 				  use-package
-				  company
-				  company-jedi
+				  which-key
+				  doom-modeline
+				  all-the-icons
+				  all-the-icons-dired
 				  yasnippet
 				  yasnippet-snippets
+				  company-posframe
+				  posframe
 				  swiper
+				  company
+				  eglot
+				  async
 				  monokai-theme
+				  markdown-mode
 				  counsel
 				  dashboard
 				  smartparens 
 				  expand-region
 				  python-mode
 				  popwin
+				  org-pomodoro
 				  ))
 
+;; use-package
+(eval-when-compile (require 'use-package))
+(eval-and-compile
+  (setq use-package-always-defer t)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-demand nil)
+  (setq use-package-expand-minimally t)
+  )
 
-;; company
-(use-package company
-  :defer nil
-  :config
-  (setq company-idle-delay 0.2) ; 补全提示延迟时间
-  (setq company-minimum-prefix-length 1) ; 最小前缀长度触发补全
-  (global-set-key (kbd "C-c y") 'company-yasnippet)
-  (global-company-mode 1) ; 全局启用Company补全模式
-  (add-hook 'after-init-hook 'global-company-mode))
-
-;; python 
-(use-package company-jedi
-  :config
-  (add-hook 'python-mode-hook (lambda () (add-to-list 'company-backends 'company-jedi))))
+;; posframe
+(use-package posframe)
 
 ;; monokai-theme
 (use-package monokai-theme
@@ -86,7 +82,6 @@
   (smartparens-global-mode t)
   (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil))
 
-
 ;; swiper
 (use-package swiper
   :bind (("C-s" . swiper))
@@ -99,13 +94,62 @@
    ("C-x C-f" . counsel-find-file)
    ("C-x b" . counsel-switch-buffer)
    ))
+
+;; org
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-agenda-files '("~/Org/daily-tasks.org" "~/Org/other-tasks.org" "~/Org/GTD.org"))
+(defun open-my-init-file()
+  (interactive)
+  (find-file "~/Org/GTD.org"))
+(global-set-key (kbd "<f7>") 'open-my-init-file)
+
+;; which-key
+(use-package which-key
+  :init (which-key-mode))
+;; doom-modeline
+(use-package doom-modeline
+  :init
+  (doom-modeline-mode 1))
+
+;; all-the-icons
+(use-package all-the-icons)
+;; all-the-icons-dired
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+;; eglot
+(use-package eglot
+  :ensure t)
+
+;; company
+(use-package company
+  :defer nil
+  :config
+  (global-company-mode)
+  ;; 配置补全延迟时间
+  (setq company-idle-delay 0.2)
+  ;; 配置补全弹出框延迟时间
+  (setq company-tooltip-idle-delay 0.2)
+  ;; 配置补全弹出框最大高度
+  (setq company-tooltip-maximum-displayed 30)
+  ;; 配置补全样式
+  (setq company-selection-wrap-around t)
+  ;;(setq company-show-numbers t)
+  (setq company-tooltip-align-annotations t))
+
+(global-set-key (kbd "C-c y") 'company-yasnippet)
+(add-hook 'python-mode-hook 'eglot-ensure)
+(require 'company-posframe)
+(company-posframe-mode 1)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company-yasnippet yasnippet-snippets jedi use-package company company-jedi lsp-mode))
+   '(all-the-icons yasnippet-snippets jedi use-package lsp-mode))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -113,3 +157,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+
